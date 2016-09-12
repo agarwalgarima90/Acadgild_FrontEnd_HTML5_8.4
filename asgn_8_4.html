@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assignment 8.4</title>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBRhdeEYk7qQJ0enA0EWG0I5kWYSaBI41A"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+        $(document).ready(function() {
+                //get location button functionality
+                $("#get-location-btn").click(function(event) {
+                        event.preventDefault();
+                        $("#location-lat-long").val("Finding location...");
+                        
+                        //Check if browser supports geo location
+                        if(navigator.geolocation) {
+                                console.log("Supported");
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                        console.log("Inside success");
+                                        var latitude = position.coords.latitude;
+                                        var longitude = position.coords.longitude;
+
+                                        var latLongResponse = 'Latitude: ' + latitude + ' / Longitude: ' + longitude;
+                                        getAddress(latitude, longitude);
+        
+                                        $("#location-lat-long").val(latLongResponse);
+                                        
+                                });
+                        } else {
+                                $("#location-lat-long").val("Geolocation API not supported by browser");
+                        }
+
+                })
+
+                //function to get lat long
+                function showPosition(position) {
+                        console.log("Inside success");
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+
+                        var latLongResponse = 'Latitude: ' + latitude + ' / Longitude: ' + longitude;
+                        getAddress(latitude, longitude);
+
+                        $("#location-lat-long").val(latLongResponse);
+                };
+
+                function getAddress(myLatitude, myLongitude) {
+                        var geocoder = new google.maps.Geocoder();
+                        var mylocation = new google.maps.LatLng(myLatitude, myLongitude);
+
+                        geocoder.geocode({'latLng': mylocation}, function(results, status) {
+                                if(status == google.maps.GeocoderStatus.OK) {
+                                        processAddress(results[0].formatted_address);
+                                } else {
+                                        alert("Geocode failure: " + status);
+                                        return false;
+                                }
+                        });
+                };
+
+                function processAddress(address) {
+                        $("#location-address").val(address);
+
+                };
+        });
+</script>
+
+
+</head>
+<body>
+        <table align="center">
+                <tr><td>
+                        <button id="get-location-btn">Get My Exact Location</button>
+                </td></tr>
+                <tr>
+                        <td>
+                                <p>Lat/Long: <input id="location-lat-long" type="text"/></p>
+                        </td>
+                </tr>
+                <tr>
+                        <td>
+                                <p>Address <input id="location-address" type="text"/></p>
+                        </td>
+                </tr>
+                
+        </table>
+</body>
+</html>
